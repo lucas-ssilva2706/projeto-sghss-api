@@ -1,10 +1,11 @@
-package com.vidaplus.sghss_api.model;
+ package com.vidaplus.sghss_api.model;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "pacientes")
@@ -14,16 +15,20 @@ public class Paciente {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPaciente;
 	
+	@NotBlank(message = "É obrigatório informar o nome do paciente")
 	@Column(name="nome", nullable = false)
 	private String nome;
 	
+	@NotBlank(message = "É obrigatório informar o CPF do paciente")	
 	@Column(name="cpf", nullable=false, unique = true)
 	private String cpf;
-	
+
+	@NotBlank(message = "É obrigatório informar a Data de Nascimento do paciente")	
 	@Column(name="data_nascimento",nullable=false)
 	@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
 	private LocalDate dataNascimento;
 	
+	@NotBlank(message = "É obrigatório informar o telefone do paciente")	
 	@Column(name="fone", nullable=false)
 	private String telefone;
 

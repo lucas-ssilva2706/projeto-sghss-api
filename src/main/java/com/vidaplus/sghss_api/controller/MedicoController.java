@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vidaplus.sghss_api.model.Paciente;
-import com.vidaplus.sghss_api.repository.PacienteRepository;
+import com.vidaplus.sghss_api.model.Medico;
+import com.vidaplus.sghss_api.repository.MedicoRepository;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/pacientes")
-public class PacienteController {
-	private PacienteRepository repository;
+@RequestMapping("/medicos")
+public class MedicoController {
+	private MedicoRepository repository;
 	
-	PacienteController(PacienteRepository pacienteRepositorio) {
-		this.repository = pacienteRepositorio;
+	MedicoController(MedicoRepository medicoRepository) {
+		this.repository = medicoRepository;
 	}
-	
+
 	@GetMapping
 	public List<?> findAll() {
 		return repository.findAll();
@@ -38,19 +38,18 @@ public class PacienteController {
 	}
 	
 	@PostMapping
-	public Paciente create(@Valid @RequestBody Paciente paciente) {
-		return repository.save(paciente);
+	public Medico create(@Valid @RequestBody Medico medico) {
+		return repository.save(medico);
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody Paciente paciente) {
+	public ResponseEntity<?> update(@PathVariable long id, @Valid @RequestBody Medico medico) {
 		return repository.findById(id).map(record -> {
-			record.setNome(paciente.getNome());
-			record.setCpf(paciente.getCpf());
-			record.setTelefone(paciente.getTelefone());
-			record.setDataNascimento(paciente.getDataNascimento());		
-			Paciente updated = repository.save(record);
-			return ResponseEntity.ok().body(updated);			
+			record.setNome(medico.getNome());
+			record.setCrm(medico.getCrm());
+			record.setEspecialidade(medico.getEspecialidade());
+			Medico updated = repository.save(record);
+			return ResponseEntity.ok().body(updated);
 		}).orElse(ResponseEntity.notFound().build());
 	}
 	
@@ -61,5 +60,4 @@ public class PacienteController {
 			return ResponseEntity.ok().build();
 		}).orElse(ResponseEntity.notFound().build());
 	}
-	
 }
