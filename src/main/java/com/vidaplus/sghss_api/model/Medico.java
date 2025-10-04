@@ -1,12 +1,19 @@
 package com.vidaplus.sghss_api.model;
 
+import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -29,6 +36,15 @@ public class Medico {
 	@NotBlank(message = "É obrigatório informar a especialidade do médico")
 	@Column(name = "especialidade", nullable = false)
 	private String especialidade;
+	
+	@NotBlank(message = "É obrigatório informar a idUsuario")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "id_usuario", referencedColumnName = "idUsuario")
+	private Usuario usuario;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "medico")
+	private List<Consulta> consultas;
 
 	public long getIdMedico() {
 		return idMedico;
@@ -62,15 +78,23 @@ public class Medico {
 		this.especialidade = especialidade;
 	}
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
 	@Override
 	public String toString() {
-		return "Medicos [idMedico=" + idMedico + ", nome=" + nome + ", crm=" + crm + ", especialidade=" + especialidade
-				+ "]";
+		return "Medico [idMedico=" + idMedico + ", nome=" + nome + ", crm=" + crm + ", especialidade=" + especialidade
+				+ ", usuario=" + usuario + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(crm, especialidade, idMedico, nome);
+		return Objects.hash(crm, especialidade, idMedico, nome, usuario);
 	}
 
 	@Override
@@ -83,7 +107,8 @@ public class Medico {
 			return false;
 		Medico other = (Medico) obj;
 		return Objects.equals(crm, other.crm) && Objects.equals(especialidade, other.especialidade)
-				&& idMedico == other.idMedico && Objects.equals(nome, other.nome);
+				&& idMedico == other.idMedico && Objects.equals(nome, other.nome)
+				&& Objects.equals(usuario, other.usuario);
 	}
 	
 	
