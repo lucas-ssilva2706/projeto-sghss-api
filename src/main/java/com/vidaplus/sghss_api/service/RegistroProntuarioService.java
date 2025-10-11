@@ -3,38 +3,56 @@ package com.vidaplus.sghss_api.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import com.vidaplus.sghss_api.dto.RegistroProntuarioDTO;
+import com.vidaplus.sghss_api.model.Consulta;
+import com.vidaplus.sghss_api.model.Prontuario;
 import com.vidaplus.sghss_api.model.RegistroProntuario;
+import com.vidaplus.sghss_api.repository.ConsultaRepository;
+import com.vidaplus.sghss_api.repository.ProntuarioRepository;
 import com.vidaplus.sghss_api.repository.RegistroProntuarioRepository;
 
 @Service
 public class RegistroProntuarioService {
 
-    private final RegistroProntuarioRepository registroRepository;
+	private final RegistroProntuarioRepository registroRepository;
+	private final ProntuarioRepository prontuarioRepository;
+	private final ConsultaRepository consultaRepository;
 
-    public RegistroProntuarioService(RegistroProntuarioRepository registroRepository) {
-        this.registroRepository = registroRepository;
-    }
+	public RegistroProntuarioService(RegistroProntuarioRepository registroRepository,
+			ProntuarioRepository prontuarioRepository, ConsultaRepository consultaRepository) {
+		this.registroRepository = registroRepository;
+		this.prontuarioRepository = prontuarioRepository;
+		this.consultaRepository = consultaRepository;
+	}
 
-    public List<RegistroProntuario> listarTodos() {
-        return registroRepository.findAll();
-    }
+	public List<RegistroProntuario> listarTodos() {
+		return registroRepository.findAll();
+	}
 
-    public Optional<RegistroProntuario> buscarPorId(long id) {
-        return registroRepository.findById(id);
-    }
+	public Optional<RegistroProntuario> buscarPorId(Long id) {
+		return registroRepository.findById(id);
+	}
 
-    public RegistroProntuario criarRegistro(RegistroProntuario registro) {
-        if (registro.getProntuario() == null || registro.getProntuario().getIdProntuario() == null) {
-            throw new IllegalArgumentException("O registro deve estar associado a um prontuário válido.");
-        }
-        return registroRepository.save(registro);
-    }
+	public RegistroProntuario criarRegistro(RegistroProntuarioDTO registroDTO) {
+		Prontuario prontuario = prontuarioRepository.findById(registroDTO.getProntuarioId()).orElseThrow(
+				() -> new RuntimeException("Prontuário não encontrado com o ID: " + registroDTO.getProntuarioId()));
 
-    public boolean deletarRegistro(long id) {
-        if (registroRepository.existsById(id)) {
-            registroRepository.deleteById(id);
-            return true;
-        }
-        return false;
-    }
+		Consulta consulta = consultaRepository.findById(registroDTO.getConsultaId()).orElseThrow(
+				() -> new RuntimeException("Consulta não encontrada com o ID: " + registroDTO.getConsultaId()));
+
+		RegistroProntuario novoRegistro = new RegistroProntuario();
+		novoRegistro.setDataHora(registroDTO.getDataHora());
+		novoRegistro.setProntuario(prontuario);
+		novoRegistro.setConsulta(consulta);
+
+		return registroRepository.save(novoRegistro);
+	}
+
+	public boolean deletarRegistro(Long id) {
+		if (registroRepository.existsById(id)) {
+			registroRepository.deleteById(id);
+			return true;
+		}
+		return false;
+	}
 }

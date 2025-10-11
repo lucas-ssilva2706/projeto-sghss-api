@@ -22,29 +22,29 @@ public class RegistroProntuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long idRegistro;
-	
-	@NotNull(message = "É obrigatório informar a data e a hora do registro")	
-	@Column(name="data_hora",nullable=false)
-	@DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
+	private Long id;
+
+	@NotNull(message = "É obrigatório informar a data e a hora do registro")
+	@Column(name = "data_hora", nullable = false)
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime dataHora;
-	
+
 	@NotNull(message = "É obrigatório informar o idProntuario")
 	@ManyToOne
 	@JoinColumn(name = "id_prontuario", nullable = false)
 	private Prontuario prontuario;
-	
+
 	@NotNull(message = "É obrigatório informar o idConsulta")
 	@OneToOne
-	@JoinColumn(name = "id_consulta", referencedColumnName = "idConsulta")
+	@JoinColumn(name = "id_consulta", referencedColumnName = "id")
 	private Consulta consulta;
 
-	public long getIdRegistro() {
-		return idRegistro;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdRegistro(long idRegistro) {
-		this.idRegistro = idRegistro;
+	public void setId(Long idRegistro) {
+		this.id = idRegistro;
 	}
 
 	public LocalDateTime getDataHora() {
@@ -73,13 +73,13 @@ public class RegistroProntuario {
 
 	@Override
 	public String toString() {
-		return "RegistroProntuario [idRegistro=" + idRegistro + ", dataHora=" + dataHora + ", prontuario=" + prontuario
-				+ ", consulta=" + consulta + "]";
+		return "RegistroProntuario [id=" + id + ", dataHora=" + dataHora + ", prontuario=" + prontuario + ", consulta="
+				+ consulta + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(consulta, dataHora, idRegistro, prontuario);
+		return Objects.hash(consulta, dataHora, id, prontuario);
 	}
 
 	@Override
@@ -91,8 +91,8 @@ public class RegistroProntuario {
 		if (getClass() != obj.getClass())
 			return false;
 		RegistroProntuario other = (RegistroProntuario) obj;
-		return Objects.equals(consulta, other.consulta) && Objects.equals(dataHora, other.dataHora)
-				&& idRegistro == other.idRegistro && Objects.equals(prontuario, other.prontuario);
+		return Objects.equals(consulta, other.consulta) && Objects.equals(dataHora, other.dataHora) && id == other.id
+				&& Objects.equals(prontuario, other.prontuario);
 	}
-		
+
 }

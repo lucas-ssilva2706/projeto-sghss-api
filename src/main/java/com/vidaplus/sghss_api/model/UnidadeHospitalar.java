@@ -20,7 +20,7 @@ public class UnidadeHospitalar {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long idUnidade;
+	private Long id;
 	
 	@NotBlank(message = "É obrigatório informar o nome da unidade")
 	@Column(name = "nome", nullable = false, unique = true)
@@ -34,12 +34,12 @@ public class UnidadeHospitalar {
 	@OneToMany(mappedBy = "unidadeHospitalar")
 	private List<Consulta> consultas;
 
-	public long getIdUnidade() {
-		return idUnidade;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdUnidade(long idUnidade) {
-		this.idUnidade = idUnidade;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getNome() {
@@ -60,7 +60,7 @@ public class UnidadeHospitalar {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(consultas, endereco, idUnidade, nome);
+		return Objects.hash(consultas, endereco, id, nome);
 	}
 
 	@Override
@@ -73,12 +73,12 @@ public class UnidadeHospitalar {
 			return false;
 		UnidadeHospitalar other = (UnidadeHospitalar) obj;
 		return Objects.equals(consultas, other.consultas) && Objects.equals(endereco, other.endereco)
-				&& idUnidade == other.idUnidade && Objects.equals(nome, other.nome);
+				&& id == other.id && Objects.equals(nome, other.nome);
 	}
 
 	@Override
 	public String toString() {
-		return "UnidadeHospitalar [idUnidade=" + idUnidade + ", nome=" + nome + ", endereco=" + endereco
+		return "UnidadeHospitalar [id=" + id + ", nome=" + nome + ", endereco=" + endereco
 				+ ", consultas=" + consultas + "]";
 	}
 	

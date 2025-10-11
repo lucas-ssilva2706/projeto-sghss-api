@@ -26,7 +26,7 @@ public class Prontuario {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idProntuario;
+	private Long id;
 	
 	@NotNull(message = "É obrigatório informar a data de criação do prontuário")	
 	@Column(name="data_criacao",nullable=false)
@@ -35,7 +35,7 @@ public class Prontuario {
 	
 	@NotNull(message = "É obrigatório informar a idPaciente")
 	@OneToOne
-	@JoinColumn(name = "id_paciente", referencedColumnName = "idPaciente")
+	@JoinColumn(name = "id_paciente", referencedColumnName = "id")
 	@JsonBackReference("paciente-prontuario")
 	private Paciente paciente;
 	
@@ -43,12 +43,12 @@ public class Prontuario {
 	@OneToMany(mappedBy = "prontuario")
 	private List<RegistroProntuario> registroProntuario;
 
-	public Long getIdProntuario() {
-		return idProntuario;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdProntuario(Long idProntuario) {
-		this.idProntuario = idProntuario;
+	public void setId(Long idProntuario) {
+		this.id = idProntuario;
 	}
 
 	public LocalDate getDataCriacao() {
@@ -69,13 +69,13 @@ public class Prontuario {
 
 	@Override
 	public String toString() {
-		return "Prontuario [idProntuario=" + idProntuario + ", dataCriacao=" + dataCriacao + ", paciente=" + paciente
+		return "Prontuario [id=" + id + ", dataCriacao=" + dataCriacao + ", paciente=" + paciente
 				+ "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(dataCriacao, idProntuario, paciente);
+		return Objects.hash(dataCriacao, id, paciente);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class Prontuario {
 		if (getClass() != obj.getClass())
 			return false;
 		Prontuario other = (Prontuario) obj;
-		return Objects.equals(dataCriacao, other.dataCriacao) && idProntuario == other.idProntuario
+		return Objects.equals(dataCriacao, other.dataCriacao) && id == other.id
 				&& Objects.equals(paciente, other.paciente);
 	}
 	

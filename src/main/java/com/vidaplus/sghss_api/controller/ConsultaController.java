@@ -29,7 +29,7 @@ public class ConsultaController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Consulta> findById(@PathVariable long id) {
+    public ResponseEntity<Consulta> findById(@PathVariable Long id) {
         return consultaService.buscarPorId(id)
             .map(record -> ResponseEntity.ok().body(record))
             .orElse(ResponseEntity.notFound().build());
@@ -41,7 +41,7 @@ public class ConsultaController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         if (consultaService.deletarConsulta(id)) {
             return ResponseEntity.ok().build();
         }

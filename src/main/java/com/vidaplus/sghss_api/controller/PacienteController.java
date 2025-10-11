@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vidaplus.sghss_api.dto.PacienteDTO;
 import com.vidaplus.sghss_api.model.Paciente;
 import com.vidaplus.sghss_api.service.PacienteService;
 
@@ -33,26 +34,26 @@ public class PacienteController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Paciente> findById(@PathVariable long id) {
+    public ResponseEntity<Paciente> findById(@PathVariable Long id) {
         return pacienteService.buscarPorId(id)
             .map(record -> ResponseEntity.ok().body(record))
             .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Paciente create(@Valid @RequestBody Paciente paciente) {
-        return pacienteService.criarPaciente(paciente);
+    public Paciente create(@Valid @RequestBody PacienteDTO pacienteDTO) {
+        return pacienteService.criarPaciente(pacienteDTO);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Paciente> update(@PathVariable long id, @Valid @RequestBody Paciente paciente) {
-        return pacienteService.atualizarPaciente(id, paciente)
+    public ResponseEntity<Paciente> update(@PathVariable Long id, @Valid @RequestBody PacienteDTO pacienteDTO) {
+        return pacienteService.atualizarPaciente(id, pacienteDTO)
             .map(updatedPaciente -> ResponseEntity.ok().body(updatedPaciente))
             .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         if (pacienteService.deletarPaciente(id)) {
             return ResponseEntity.ok().build();
         }

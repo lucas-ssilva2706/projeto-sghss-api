@@ -23,7 +23,7 @@ public class Usuario {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long idUsuario;
+	private Long id;
 	
 	@NotBlank(message = "É obrigatório informar o email")
 	@Column(name = "email", nullable = false, unique = true)
@@ -62,12 +62,12 @@ public class Usuario {
 		this.medico = medico;
 	}
 
-	public long getIdUsuario() {
-		return idUsuario;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdUsuario(long idUsuario) {
-		this.idUsuario = idUsuario;
+	public void setId(Long idUsuario) {
+		this.id = idUsuario;
 	}
 
 	public String getEmail() {
@@ -96,13 +96,13 @@ public class Usuario {
 
 	@Override
 	public String toString() {
-		return "Usuario [idUsuario=" + idUsuario + ", email=" + email + ", senha=" + senha + ", tipoUsuario="
+		return "Usuario [id=" + id + ", email=" + email + ", senha=" + senha + ", tipoUsuario="
 				+ tipoUsuario + ", paciente=" + paciente + ", medico=" + medico + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, idUsuario, medico, paciente, senha, tipoUsuario);
+		return Objects.hash(email, id, medico, paciente, senha, tipoUsuario);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class Usuario {
 		if (getClass() != obj.getClass())
 			return false;
 		Usuario other = (Usuario) obj;
-		return Objects.equals(email, other.email) && idUsuario == other.idUsuario
+		return Objects.equals(email, other.email) && id == other.id
 				&& Objects.equals(medico, other.medico) && Objects.equals(paciente, other.paciente)
 				&& Objects.equals(senha, other.senha) && tipoUsuario == other.tipoUsuario;
 	}

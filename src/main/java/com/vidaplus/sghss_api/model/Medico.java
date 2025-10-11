@@ -25,7 +25,7 @@ public class Medico {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long idMedico;
+	private Long id;
 
 	@NotBlank(message = "É obrigatório informar o nome do médico")
 	@Column(name = "nome", nullable = false)
@@ -41,7 +41,7 @@ public class Medico {
 
 	@NotNull(message = "É obrigatório informar a idUsuario")
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "id_usuario", referencedColumnName = "idUsuario")
+	@JoinColumn(name = "id_usuario", referencedColumnName = "id")
 	@JsonManagedReference("medico-usuario")
 	private Usuario usuario;
 
@@ -49,12 +49,12 @@ public class Medico {
 	@OneToMany(mappedBy = "medico")
 	private List<Consulta> consultas;
 
-	public long getIdMedico() {
-		return idMedico;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdMedico(long idMedico) {
-		this.idMedico = idMedico;
+	public void setId(Long idMedico) {
+		this.id = idMedico;
 	}
 
 	public String getNome() {
@@ -91,13 +91,13 @@ public class Medico {
 
 	@Override
 	public String toString() {
-		return "Medico [idMedico=" + idMedico + ", nome=" + nome + ", crm=" + crm + ", especialidade=" + especialidade
+		return "Medico [id=" + id + ", nome=" + nome + ", crm=" + crm + ", especialidade=" + especialidade
 				+ ", usuario=" + usuario + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(crm, especialidade, idMedico, nome, usuario);
+		return Objects.hash(crm, especialidade, id, nome, usuario);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class Medico {
 			return false;
 		Medico other = (Medico) obj;
 		return Objects.equals(crm, other.crm) && Objects.equals(especialidade, other.especialidade)
-				&& idMedico == other.idMedico && Objects.equals(nome, other.nome)
+				&& id == other.id && Objects.equals(nome, other.nome)
 				&& Objects.equals(usuario, other.usuario);
 	}
 

@@ -29,7 +29,7 @@ public class Paciente {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idPaciente;
+	private Long id;
 	
 	@NotBlank(message = "É obrigatório informar o nome do paciente")
 	@Column(name="nome", nullable = false)
@@ -51,7 +51,7 @@ public class Paciente {
 	
 	@NotNull(message = "É obrigatório informar a idUsuario")
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "id_usuario", referencedColumnName = "idUsuario")
+	@JoinColumn(name = "id_usuario", referencedColumnName = "id")
 	@JsonManagedReference("paciente-usuario")
 	private Usuario usuario;
 	
@@ -64,12 +64,12 @@ public class Paciente {
     @JsonManagedReference("paciente-prontuario")
     private Prontuario prontuario;
 
-	public Long getIdPaciente() {
-		return idPaciente;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdPaciente(Long idPaciente) {
-		this.idPaciente = idPaciente;
+	public void setId(Long idPaciente) {
+		this.id = idPaciente;
 	}
 
 	public String getNome() {
@@ -114,13 +114,13 @@ public class Paciente {
 
 	@Override
 	public String toString() {
-		return "Paciente [idPaciente=" + idPaciente + ", nome=" + nome + ", cpf=" + cpf + ", dataNascimento="
+		return "Paciente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", dataNascimento="
 				+ dataNascimento + ", telefone=" + telefone + ", usuario=" + usuario + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(cpf, dataNascimento, idPaciente, nome, telefone, usuario);
+		return Objects.hash(cpf, dataNascimento, id, nome, telefone, usuario);
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class Paciente {
 			return false;
 		Paciente other = (Paciente) obj;
 		return Objects.equals(cpf, other.cpf) && Objects.equals(dataNascimento, other.dataNascimento)
-				&& Objects.equals(idPaciente, other.idPaciente) && Objects.equals(nome, other.nome)
+				&& Objects.equals(id, other.id) && Objects.equals(nome, other.nome)
 				&& Objects.equals(telefone, other.telefone) && Objects.equals(usuario, other.usuario);
 	}
 	

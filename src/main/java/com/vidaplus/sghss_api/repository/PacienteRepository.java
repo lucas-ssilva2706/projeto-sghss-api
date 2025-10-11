@@ -11,5 +11,6 @@ import com.vidaplus.sghss_api.model.Paciente;
 public interface PacienteRepository extends JpaRepository<Paciente, Long>{
 
 	Optional<Paciente> findByCpf(String cpf);
+    Optional<Paciente> findByUsuario_Id(Long usuarioId);	
 	
 }

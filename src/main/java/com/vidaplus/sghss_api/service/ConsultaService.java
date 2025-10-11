@@ -29,25 +29,25 @@ public class ConsultaService {
         return consultaRepository.findAll();
     }
 
-    public Optional<Consulta> buscarPorId(long id) {
+    public Optional<Consulta> buscarPorId(Long id) {
         return consultaRepository.findById(id);
     }
 
     public Consulta criarConsulta(Consulta consulta) {
-        pacienteRepository.findById(consulta.getPaciente().getIdPaciente())
+        pacienteRepository.findById(consulta.getPaciente().getId())
             .orElseThrow(() -> new RuntimeException("Paciente não encontrado."));
-        medicoRepository.findById(consulta.getMedico().getIdMedico())
+        medicoRepository.findById(consulta.getMedico().getId())
             .orElseThrow(() -> new RuntimeException("Médico não encontrado."));
 
-        LocalDateTime dataHora = consulta.getDataHoras();
-        Long medicoId = consulta.getMedico().getIdMedico();
-        Long pacienteId = consulta.getPaciente().getIdPaciente();
+        LocalDateTime dataHoras = consulta.getDataHoras();
+        Long medicoId = consulta.getMedico().getId();
+        Long pacienteId = consulta.getPaciente().getId();
 
-        if (consultaRepository.findByMedicoIdAndDataHora(medicoId, dataHora).isPresent()) {
+        if (consultaRepository.findByMedicoIdAndDataHoras(medicoId, dataHoras).isPresent()) {
             throw new RuntimeException("O médico já possui uma consulta agendada para este horário.");
         }
 
-        if (consultaRepository.findByPacienteIdAndDataHora(pacienteId, dataHora).isPresent()) {
+        if (consultaRepository.findByPacienteIdAndDataHoras(pacienteId, dataHoras).isPresent()) {
             throw new RuntimeException("O paciente já possui uma consulta agendada para este horário.");
         }
 
@@ -56,7 +56,7 @@ public class ConsultaService {
         return consultaRepository.save(consulta);
     }
 
-    public boolean deletarConsulta(long id) {
+    public boolean deletarConsulta(Long id) {
         if (consultaRepository.existsById(id)) {
             consultaRepository.deleteById(id);
             return true;

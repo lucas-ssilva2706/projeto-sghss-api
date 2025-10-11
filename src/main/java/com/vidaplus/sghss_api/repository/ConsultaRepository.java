@@ -7,7 +7,8 @@ import com.vidaplus.sghss_api.model.Consulta;
 
 public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 
-    Optional<Consulta> findByMedicoIdAndDataHora(Long medicoId, LocalDateTime dataHora);
-    Optional<Consulta> findByPacienteIdAndDataHora(Long pacienteId, LocalDateTime dataHora);
+
+    Optional<Consulta> findByMedicoIdAndDataHoras(Long medicoId, LocalDateTime dataHoras);
+    Optional<Consulta> findByPacienteIdAndDataHoras(Long pacienteId, LocalDateTime dataHoras);
     
 }

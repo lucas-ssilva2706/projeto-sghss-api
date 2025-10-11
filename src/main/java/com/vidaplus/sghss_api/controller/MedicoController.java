@@ -1,6 +1,7 @@
 package com.vidaplus.sghss_api.controller;
 
 import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +11,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.vidaplus.sghss_api.dto.MedicoDTO;
 import com.vidaplus.sghss_api.model.Medico;
 import com.vidaplus.sghss_api.service.MedicoService;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -30,26 +34,26 @@ public class MedicoController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Medico> findById(@PathVariable long id) {
+    public ResponseEntity<Medico> findById(@PathVariable Long id) {
         return medicoService.buscarPorId(id)
             .map(record -> ResponseEntity.ok().body(record))
             .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Medico create(@Valid @RequestBody Medico medico) {
-        return medicoService.criarMedico(medico);
+    public Medico create(@Valid @RequestBody MedicoDTO medicoDTO) {
+        return medicoService.criarMedico(medicoDTO);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Medico> update(@PathVariable long id, @Valid @RequestBody Medico medico) {
-        return medicoService.atualizarMedico(id, medico)
+    public ResponseEntity<Medico> update(@PathVariable Long id, @Valid @RequestBody MedicoDTO medicoDTO) {
+        return medicoService.atualizarMedico(id, medicoDTO)
             .map(updatedMedico -> ResponseEntity.ok().body(updatedMedico))
             .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         if (medicoService.deletarMedico(id)) {
             return ResponseEntity.ok().build();
         }

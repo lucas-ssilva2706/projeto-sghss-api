@@ -7,5 +7,6 @@ import com.vidaplus.sghss_api.model.Medico;
 public interface MedicoRepository extends JpaRepository<Medico, Long> {
 
     Optional<Medico> findByCrm(String crm);
+    Optional<Medico> findByUsuario_Id(Long usuarioId);    
     
 }

@@ -25,7 +25,7 @@ public class Consulta {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long idConsulta;
+	private Long id;
 	
 	@NotNull(message = "É obrigatório informar a data e a hora da consulta")	
 	@Column(name="data_hora",nullable=false)
@@ -52,12 +52,12 @@ public class Consulta {
 	@JoinColumn(name = "id_unidade_hospitalar", nullable = false)
 	private UnidadeHospitalar unidadeHospitalar;
 
-	public long getIdConsulta() {
-		return idConsulta;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdConsulta(long idConsulta) {
-		this.idConsulta = idConsulta;
+	public void setId(Long idConsulta) {
+		this.id = idConsulta;
 	}
 
 	public LocalDateTime getDataHoras() {
@@ -102,14 +102,14 @@ public class Consulta {
 
 	@Override
 	public String toString() {
-		return "Consulta [idConsulta=" + idConsulta + ", dataHoras=" + dataHoras + ", situacaoConsulta="
+		return "Consulta [id=" + id + ", dataHoras=" + dataHoras + ", situacaoConsulta="
 				+ situacaoConsulta + ", paciente=" + paciente + ", medico=" + medico + ", unidadeHospitalar="
 				+ unidadeHospitalar + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(dataHoras, idConsulta, medico, paciente, situacaoConsulta, unidadeHospitalar);
+		return Objects.hash(dataHoras, id, medico, paciente, situacaoConsulta, unidadeHospitalar);
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class Consulta {
 		if (getClass() != obj.getClass())
 			return false;
 		Consulta other = (Consulta) obj;
-		return Objects.equals(dataHoras, other.dataHoras) && idConsulta == other.idConsulta
+		return Objects.equals(dataHoras, other.dataHoras) && id == other.id
 				&& Objects.equals(medico, other.medico) && Objects.equals(paciente, other.paciente)
 				&& situacaoConsulta == other.situacaoConsulta
 				&& Objects.equals(unidadeHospitalar, other.unidadeHospitalar);
