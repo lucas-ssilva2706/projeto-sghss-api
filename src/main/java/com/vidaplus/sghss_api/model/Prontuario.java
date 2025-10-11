@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -17,7 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "prontuarios")
@@ -25,27 +26,28 @@ public class Prontuario {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long idProntuario;
+	private Long idProntuario;
 	
-	@NotBlank(message = "É obrigatório informar a data de criação do prontuário")	
+	@NotNull(message = "É obrigatório informar a data de criação do prontuário")	
 	@Column(name="data_criacao",nullable=false)
 	@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
 	private LocalDate dataCriacao;	
 	
-	@NotBlank(message = "É obrigatório informar a idPaciente")
+	@NotNull(message = "É obrigatório informar a idPaciente")
 	@OneToOne
 	@JoinColumn(name = "id_paciente", referencedColumnName = "idPaciente")
+	@JsonBackReference("paciente-prontuario")
 	private Paciente paciente;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "prontuario")
-	private List<Prontuario> prontuario;
+	private List<RegistroProntuario> registroProntuario;
 
-	public long getIdProntuario() {
+	public Long getIdProntuario() {
 		return idProntuario;
 	}
 
-	public void setIdProntuario(long idProntuario) {
+	public void setIdProntuario(Long idProntuario) {
 		this.idProntuario = idProntuario;
 	}
 

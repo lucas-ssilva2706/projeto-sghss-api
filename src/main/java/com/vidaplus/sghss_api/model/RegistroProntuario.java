@@ -14,7 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "registros_prontuarios")
@@ -24,17 +24,17 @@ public class RegistroProntuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long idRegistro;
 	
-	@NotBlank(message = "É obrigatório informar a data e a hora do registro")	
+	@NotNull(message = "É obrigatório informar a data e a hora do registro")	
 	@Column(name="data_hora",nullable=false)
 	@DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime dataHora;
 	
-	@NotBlank(message = "É obrigatório informar o idProntuario")
+	@NotNull(message = "É obrigatório informar o idProntuario")
 	@ManyToOne
 	@JoinColumn(name = "id_prontuario", nullable = false)
 	private Prontuario prontuario;
 	
-	@NotBlank(message = "É obrigatório informar o idConsulta")
+	@NotNull(message = "É obrigatório informar o idConsulta")
 	@OneToOne
 	@JoinColumn(name = "id_consulta", referencedColumnName = "idConsulta")
 	private Consulta consulta;

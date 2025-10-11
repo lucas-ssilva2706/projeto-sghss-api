@@ -17,7 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "consultas")
@@ -27,29 +27,29 @@ public class Consulta {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long idConsulta;
 	
-	@NotBlank(message = "É obrigatório informar a data e a hora da consulta")	
+	@NotNull(message = "É obrigatório informar a data e a hora da consulta")	
 	@Column(name="data_hora",nullable=false)
 	@DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime dataHoras;
 	
-	@NotBlank(message = "É obrigatório informar a situação da consulta")
+	@NotNull(message = "É obrigatório informar a situação da consulta")
 	@Column(name="situacao", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private SituacaoConsulta situacaoConsulta;
 	
-	@NotBlank(message = "É obrigatório informar o id do Paciente")
+	@NotNull(message = "É obrigatório informar o id do Paciente")
 	@ManyToOne
 	@JoinColumn(name = "id_paciente", nullable = false)
 	private Paciente paciente;
 	
-	@NotBlank(message = "É obrigatório informar o id do Médico")
+	@NotNull(message = "É obrigatório informar o id do Médico")
 	@ManyToOne
 	@JoinColumn(name = "id_medico", nullable = false)
 	private Medico medico;
 	
-	@NotBlank(message = "É obrigatório informar o id da Unidade Hospitalar")
+	@NotNull(message = "É obrigatório informar o id da Unidade Hospitalar")
 	@ManyToOne
-	@JoinColumn(name = "id_unidade_hospitalar")
+	@JoinColumn(name = "id_unidade_hospitalar", nullable = false)
 	private UnidadeHospitalar unidadeHospitalar;
 
 	public long getIdConsulta() {

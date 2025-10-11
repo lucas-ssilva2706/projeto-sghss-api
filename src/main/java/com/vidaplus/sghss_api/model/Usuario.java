@@ -2,6 +2,7 @@ package com.vidaplus.sghss_api.model;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vidaplus.sghss_api.model.enums.TipoUsuario;
 
 import jakarta.persistence.Column;
@@ -11,8 +12,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "usuarios")
@@ -30,10 +33,34 @@ public class Usuario {
 	@Column(name = "senha", nullable = false)
 	private String senha;
 	
-	@NotBlank(message = "É obrigatório informar o tipo do usuário")
+	@NotNull(message = "É obrigatório informar o tipo do usuário")
 	@Column(name = "tipo_usuario", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private TipoUsuario tipoUsuario;
+	
+	@OneToOne(mappedBy = "usuario")
+	@JsonBackReference("paciente-usuario")
+	private Paciente paciente;
+	
+	@OneToOne(mappedBy = "usuario")
+	@JsonBackReference("medico-usuario")
+	private Medico medico;
+
+	public Paciente getPaciente() {
+		return paciente;
+	}
+
+	public void setPaciente(Paciente paciente) {
+		this.paciente = paciente;
+	}
+
+	public Medico getMedico() {
+		return medico;
+	}
+
+	public void setMedico(Medico medico) {
+		this.medico = medico;
+	}
 
 	public long getIdUsuario() {
 		return idUsuario;
@@ -59,23 +86,23 @@ public class Usuario {
 		this.senha = senha;
 	}
 
-	public @NotBlank(message = "É obrigatório informar o tipo do usuário") TipoUsuario getTipoUsuario() {
+	public TipoUsuario getTipoUsuario() {
 		return tipoUsuario;
 	}
 
-	public void setTipoUsuario(@NotBlank(message = "É obrigatório informar o tipo do usuário") TipoUsuario tipoUsuario) {
+	public void setTipoUsuario(TipoUsuario tipoUsuario) {
 		this.tipoUsuario = tipoUsuario;
 	}
 
 	@Override
 	public String toString() {
 		return "Usuario [idUsuario=" + idUsuario + ", email=" + email + ", senha=" + senha + ", tipoUsuario="
-				+ tipoUsuario + "]";
+				+ tipoUsuario + ", paciente=" + paciente + ", medico=" + medico + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, idUsuario, senha, tipoUsuario);
+		return Objects.hash(email, idUsuario, medico, paciente, senha, tipoUsuario);
 	}
 
 	@Override
@@ -87,8 +114,9 @@ public class Usuario {
 		if (getClass() != obj.getClass())
 			return false;
 		Usuario other = (Usuario) obj;
-		return Objects.equals(email, other.email) && idUsuario == other.idUsuario && Objects.equals(senha, other.senha)
-				&& Objects.equals(tipoUsuario, other.tipoUsuario);
+		return Objects.equals(email, other.email) && idUsuario == other.idUsuario
+				&& Objects.equals(medico, other.medico) && Objects.equals(paciente, other.paciente)
+				&& Objects.equals(senha, other.senha) && tipoUsuario == other.tipoUsuario;
 	}
 	
 	

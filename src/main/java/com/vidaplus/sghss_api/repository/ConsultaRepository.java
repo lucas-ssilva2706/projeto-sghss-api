@@ -1,11 +1,13 @@
 package com.vidaplus.sghss_api.repository;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import com.vidaplus.sghss_api.model.Consulta;
 
-@Repository
-public interface ConsultaRepository extends JpaRepository<Consulta, Long>{
+public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
 
+    Optional<Consulta> findByMedicoIdAndDataHora(Long medicoId, LocalDateTime dataHora);
+    Optional<Consulta> findByPacienteIdAndDataHora(Long pacienteId, LocalDateTime dataHora);
+    
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -16,15 +17,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "medicos")
 public class Medico {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long idMedico;
-	
+
 	@NotBlank(message = "É obrigatório informar o nome do médico")
 	@Column(name = "nome", nullable = false)
 	private String nome;
@@ -32,16 +34,17 @@ public class Medico {
 	@NotBlank(message = "É obrigatório informar o CRM do médico")
 	@Column(name = "crm", nullable = false, unique = true)
 	private String crm;
-	
+
 	@NotBlank(message = "É obrigatório informar a especialidade do médico")
 	@Column(name = "especialidade", nullable = false)
 	private String especialidade;
-	
-	@NotBlank(message = "É obrigatório informar a idUsuario")
+
+	@NotNull(message = "É obrigatório informar a idUsuario")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_usuario", referencedColumnName = "idUsuario")
+	@JsonManagedReference("medico-usuario")
 	private Usuario usuario;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "medico")
 	private List<Consulta> consultas;
@@ -110,7 +113,5 @@ public class Medico {
 				&& idMedico == other.idMedico && Objects.equals(nome, other.nome)
 				&& Objects.equals(usuario, other.usuario);
 	}
-	
-	
 
 }

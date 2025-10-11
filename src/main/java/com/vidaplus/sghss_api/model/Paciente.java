@@ -20,6 +20,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -39,7 +40,7 @@ public class Paciente {
 	@Column(name="cpf", nullable=false, unique = true)
 	private String cpf;
 
-	@NotBlank(message = "É obrigatório informar a Data de Nascimento do paciente")
+	@NotNull(message = "É obrigatório informar a Data de Nascimento do paciente")
 	@Column(name="data_nascimento",nullable=false)
 	@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
 	private LocalDate dataNascimento;
@@ -48,18 +49,19 @@ public class Paciente {
 	@Column(name="fone", nullable=false)
 	private String telefone;
 	
-	@NotBlank(message = "É obrigatório informar a idUsuario")
+	@NotNull(message = "É obrigatório informar a idUsuario")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_usuario", referencedColumnName = "idUsuario")
-	@JsonManagedReference
+	@JsonManagedReference("paciente-usuario")
 	private Usuario usuario;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "paciente")
 	private List<Consulta> consultas;
 	
-    @OneToOne(mappedBy = "paciente")
     @JsonIgnore
+    @OneToOne(mappedBy = "paciente")
+    @JsonManagedReference("paciente-prontuario")
     private Prontuario prontuario;
 
 	public Long getIdPaciente() {

@@ -1,11 +1,11 @@
 package com.vidaplus.sghss_api.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import com.vidaplus.sghss_api.model.Prontuario;
 
-@Repository
-public interface ProntuarioRepository extends JpaRepository<Prontuario, Long>{
+public interface ProntuarioRepository extends JpaRepository<Prontuario, Long> {
 
+    Optional<Prontuario> findByPacienteId(Long pacienteId);
+    
 }
