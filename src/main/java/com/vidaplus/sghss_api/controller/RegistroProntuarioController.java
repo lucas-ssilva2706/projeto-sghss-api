@@ -2,6 +2,7 @@ package com.vidaplus.sghss_api.controller;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,22 +26,26 @@ public class RegistroProntuarioController {
 	}
 
 	@GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
 	public List<RegistroProntuario> findAll() {
 		return registroService.listarTodos();
 	}
 
 	@GetMapping(path = "/{id}")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO')")
 	public ResponseEntity<RegistroProntuario> findById(@PathVariable Long id) {
 		return registroService.buscarPorId(id).map(record -> ResponseEntity.ok().body(record))
 				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO')")
 	public RegistroProntuario create(@Valid @RequestBody RegistroProntuarioDTO registroDTO) {
 		return registroService.criarRegistro(registroDTO);
 	}
 
 	@DeleteMapping(path = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		if (registroService.deletarRegistro(id)) {
 			return ResponseEntity.ok().build();

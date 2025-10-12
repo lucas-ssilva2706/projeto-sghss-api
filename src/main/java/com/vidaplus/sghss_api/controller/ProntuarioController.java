@@ -3,6 +3,7 @@ package com.vidaplus.sghss_api.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,11 +28,13 @@ public class ProntuarioController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<Prontuario> findAll() {
         return prontuarioService.listarTodos();
     }
 
     @GetMapping(path = "/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO')")
     public ResponseEntity<Prontuario> findById(@PathVariable Long id) {
         return prontuarioService.buscarPorId(id)
             .map(record -> ResponseEntity.ok().body(record))
@@ -39,6 +42,7 @@ public class ProntuarioController {
     }
     
     @GetMapping("/paciente/{pacienteId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO')")
     public ResponseEntity<Prontuario> findByPacienteId(@PathVariable Long pacienteId) {
         return prontuarioService.buscarPorPacienteId(pacienteId)
             .map(prontuario -> ResponseEntity.ok().body(prontuario))
@@ -46,6 +50,7 @@ public class ProntuarioController {
     }    
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO')")
     public Prontuario create(@Valid @RequestBody ProntuarioDTO prontuarioDTO) {
         return prontuarioService.criarProntuario(prontuarioDTO);
     }

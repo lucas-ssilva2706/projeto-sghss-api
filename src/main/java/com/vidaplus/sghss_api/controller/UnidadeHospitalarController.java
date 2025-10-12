@@ -3,6 +3,7 @@ package com.vidaplus.sghss_api.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,11 +30,13 @@ public class UnidadeHospitalarController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<UnidadeHospitalar> findAll() {
         return unidadeService.listarTodas();
     }
 
     @GetMapping(path = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UnidadeHospitalar> findById(@PathVariable Long id) {
         return unidadeService.buscarPorId(id)
             .map(record -> ResponseEntity.ok().body(record))
@@ -41,11 +44,13 @@ public class UnidadeHospitalarController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public UnidadeHospitalar create(@Valid @RequestBody UnidadeHospitalarDTO unidadeDTO) {
         return unidadeService.criarUnidade(unidadeDTO);
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UnidadeHospitalar> update(@PathVariable Long id, @Valid @RequestBody UnidadeHospitalarDTO unidadeDTO) {
         return unidadeService.atualizarUnidade(id, unidadeDTO)
             .map(updatedUnidade -> ResponseEntity.ok().body(updatedUnidade))
@@ -53,6 +58,7 @@ public class UnidadeHospitalarController {
     }
 
     @DeleteMapping(path = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         if (unidadeService.deletarUnidade(id)) {
             return ResponseEntity.ok().build();

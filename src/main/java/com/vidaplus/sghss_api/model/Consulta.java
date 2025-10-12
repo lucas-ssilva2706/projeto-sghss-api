@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.vidaplus.sghss_api.model.enums.SituacaoConsulta;
+import com.vidaplus.sghss_api.model.enums.TipoConsulta;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,34 +23,39 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 @Table(name = "consultas")
 public class Consulta {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@NotNull(message = "É obrigatório informar a data e a hora da consulta")	
-	@Column(name="data_hora",nullable=false)
-	@DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
+
+	@NotNull(message = "É obrigatório informar a data e a hora da consulta")
+	@Column(name = "data_hora", nullable = false)
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime dataHoras;
-	
+
 	@NotNull(message = "É obrigatório informar a situação da consulta")
-	@Column(name="situacao", nullable = false)
+	@Column(name = "situacao", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private SituacaoConsulta situacaoConsulta;
-	
+
 	@NotNull(message = "É obrigatório informar o id do Paciente")
 	@ManyToOne
 	@JoinColumn(name = "id_paciente", nullable = false)
 	private Paciente paciente;
-	
+
 	@NotNull(message = "É obrigatório informar o id do Médico")
 	@ManyToOne
 	@JoinColumn(name = "id_medico", nullable = false)
 	private Medico medico;
-	
+
+	@NotNull(message = "É obrigatório informar o tipo da consulta")
+	@Column(name = "tipo_consulta", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private TipoConsulta tipoConsulta;
+
 	@NotNull(message = "É obrigatório informar o id da Unidade Hospitalar")
 	@ManyToOne
-	@JoinColumn(name = "id_unidade_hospitalar", nullable = false)
+	@JoinColumn(name = "id_unidade_hospitalar")
 	private UnidadeHospitalar unidadeHospitalar;
 
 	public Long getId() {
@@ -92,6 +98,14 @@ public class Consulta {
 		this.medico = medico;
 	}
 
+	public TipoConsulta getTipoConsulta() {
+		return tipoConsulta;
+	}
+
+	public void setTipoConsulta(TipoConsulta tipoConsulta) {
+		this.tipoConsulta = tipoConsulta;
+	}
+
 	public UnidadeHospitalar getUnidadeHospitalar() {
 		return unidadeHospitalar;
 	}
@@ -102,14 +116,14 @@ public class Consulta {
 
 	@Override
 	public String toString() {
-		return "Consulta [id=" + id + ", dataHoras=" + dataHoras + ", situacaoConsulta="
-				+ situacaoConsulta + ", paciente=" + paciente + ", medico=" + medico + ", unidadeHospitalar="
-				+ unidadeHospitalar + "]";
+		return "Consulta [id=" + id + ", dataHoras=" + dataHoras + ", situacaoConsulta=" + situacaoConsulta
+				+ ", tipoConsulta=" + tipoConsulta + ", paciente=" + paciente + ", medico=" + medico
+				+ ", unidadeHospitalar=" + unidadeHospitalar + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(dataHoras, id, medico, paciente, situacaoConsulta, unidadeHospitalar);
+		return Objects.hash(dataHoras, id, medico, paciente, situacaoConsulta, tipoConsulta, unidadeHospitalar);
 	}
 
 	@Override
@@ -121,12 +135,9 @@ public class Consulta {
 		if (getClass() != obj.getClass())
 			return false;
 		Consulta other = (Consulta) obj;
-		return Objects.equals(dataHoras, other.dataHoras) && id == other.id
+		return Objects.equals(dataHoras, other.dataHoras) && Objects.equals(id, other.id)
 				&& Objects.equals(medico, other.medico) && Objects.equals(paciente, other.paciente)
-				&& situacaoConsulta == other.situacaoConsulta
+				&& situacaoConsulta == other.situacaoConsulta && tipoConsulta == other.tipoConsulta
 				&& Objects.equals(unidadeHospitalar, other.unidadeHospitalar);
 	}
-	
-	
-
 }

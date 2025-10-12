@@ -3,6 +3,7 @@ package com.vidaplus.sghss_api.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vidaplus.sghss_api.dto.MedicoDTO;
+import com.vidaplus.sghss_api.model.Consulta;
 import com.vidaplus.sghss_api.model.Medico;
+import com.vidaplus.sghss_api.service.ConsultaService;
 import com.vidaplus.sghss_api.service.MedicoService;
 
 import jakarta.validation.Valid;
@@ -23,29 +26,42 @@ import jakarta.validation.Valid;
 public class MedicoController {
 
     private final MedicoService medicoService;
+    private final ConsultaService consultaService;
 
-    public MedicoController(MedicoService medicoService) {
+    public MedicoController(MedicoService medicoService, ConsultaService consultaService) {
         this.medicoService = medicoService;
+        this.consultaService = consultaService;
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<Medico> findAll() {
         return medicoService.listarTodos();
     }
 
     @GetMapping(path = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Medico> findById(@PathVariable Long id) {
         return medicoService.buscarPorId(id)
             .map(record -> ResponseEntity.ok().body(record))
             .orElse(ResponseEntity.notFound().build());
     }
+    
+    @GetMapping("/meu-perfil")
+    @PreAuthorize("hasAuthority('MEDICO')")
+    public ResponseEntity<Medico> getMeuPerfil() {
+        Medico medico = medicoService.buscarMeuPerfil();
+        return ResponseEntity.ok(medico);
+    }    
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Medico create(@Valid @RequestBody MedicoDTO medicoDTO) {
         return medicoService.criarMedico(medicoDTO);
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Medico> update(@PathVariable Long id, @Valid @RequestBody MedicoDTO medicoDTO) {
         return medicoService.atualizarMedico(id, medicoDTO)
             .map(updatedMedico -> ResponseEntity.ok().body(updatedMedico))
@@ -53,10 +69,19 @@ public class MedicoController {
     }
 
     @DeleteMapping(path = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         if (medicoService.deletarMedico(id)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }
+    
+    @GetMapping("/minhas-consultas")
+    @PreAuthorize("hasAuthority('MEDICO')")
+    public ResponseEntity<List<Consulta>> getMinhasConsultas() {
+        Medico medico = medicoService.buscarMeuPerfil();
+        List<Consulta> consultas = consultaService.buscarConsultasPorMedicoId(medico.getId());
+        return ResponseEntity.ok(consultas);
+    }   
 }

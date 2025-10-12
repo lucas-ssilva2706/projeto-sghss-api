@@ -3,6 +3,8 @@ package com.vidaplus.sghss_api.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.vidaplus.sghss_api.dto.MedicoDTO;
@@ -29,6 +31,24 @@ public class MedicoService {
 
     public Optional<Medico> buscarPorId(Long id) {
         return medicoRepository.findById(id);
+    }
+    
+    public Medico buscarMeuPerfil() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String emailUsuarioLogado;
+
+        if (principal instanceof UserDetails) {
+            emailUsuarioLogado = ((UserDetails) principal).getUsername();
+        } else {
+            emailUsuarioLogado = principal.toString();
+        }
+
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado no token."));
+
+        return medicoRepository.findByUsuario_Id(usuario.getId())
+            .orElseThrow(() -> new RuntimeException("Nenhum perfil de médico encontrado para o usuário logado."));
     }
 
     public Medico criarMedico(MedicoDTO medicoDTO) {

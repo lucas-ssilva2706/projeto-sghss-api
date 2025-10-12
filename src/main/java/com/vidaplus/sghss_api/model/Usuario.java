@@ -27,9 +27,6 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "usuarios")
 public class Usuario implements UserDetails {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
