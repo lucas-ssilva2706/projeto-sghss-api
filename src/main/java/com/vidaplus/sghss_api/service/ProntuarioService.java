@@ -30,13 +30,17 @@ public class ProntuarioService {
     public Optional<Prontuario> buscarPorId(Long id) {
         return prontuarioRepository.findById(id);
     }
-
+    
+    public Optional<Prontuario> buscarPorPacienteId(Long pacienteId) {
+        return prontuarioRepository.findByPaciente_Id(pacienteId);
+    }    
+   
     public Prontuario criarProntuario(ProntuarioDTO prontuarioDTO) {
         Long pacienteId = prontuarioDTO.getPacienteId();
         Paciente paciente = pacienteRepository.findById(pacienteId)
             .orElseThrow(() -> new RuntimeException("Paciente não encontrado com o ID: " + pacienteId));
-
-        if (prontuarioRepository.findByPacienteId(pacienteId).isPresent()) {
+        
+        if (prontuarioRepository.findByPaciente_Id(pacienteId).isPresent()) {
             throw new RuntimeException("Este paciente já possui um prontuário cadastrado.");
         }
 

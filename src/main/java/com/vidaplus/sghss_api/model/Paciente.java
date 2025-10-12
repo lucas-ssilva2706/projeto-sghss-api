@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -61,7 +62,7 @@ public class Paciente {
 	
     @JsonIgnore
     @OneToOne(mappedBy = "paciente")
-    @JsonManagedReference("paciente-prontuario")
+    @JsonBackReference("paciente-prontuario")
     private Prontuario prontuario;
 
 	public Long getId() {

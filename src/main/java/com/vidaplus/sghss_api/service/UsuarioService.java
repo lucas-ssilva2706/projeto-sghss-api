@@ -2,6 +2,8 @@ package com.vidaplus.sghss_api.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.vidaplus.sghss_api.dto.UsuarioDTO;
 import com.vidaplus.sghss_api.model.Usuario;
@@ -11,9 +13,11 @@ import com.vidaplus.sghss_api.repository.UsuarioRepository;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Usuario> listarTodos() {
@@ -31,7 +35,7 @@ public class UsuarioService {
 
         Usuario novoUsuario = new Usuario();
         novoUsuario.setEmail(usuarioDTO.getEmail());
-        novoUsuario.setSenha(usuarioDTO.getSenha());
+        novoUsuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
         novoUsuario.setTipoUsuario(usuarioDTO.getTipoUsuario());
 
         return usuarioRepository.save(novoUsuario);
@@ -39,18 +43,18 @@ public class UsuarioService {
 
     public Optional<Usuario> atualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
         return usuarioRepository.findById(id)
-            .map(usuarioExistente -> {
-                usuarioRepository.findByEmail(usuarioDTO.getEmail()).ifPresent(usuarioComEmail -> {
-                    if (usuarioComEmail.getId() != id) {
+            .map(usuario -> {
+                usuarioRepository.findByEmail(usuarioDTO.getEmail()).ifPresent(usuarioEmail -> {
+                    if (usuarioEmail.getId() != id) {
                         throw new RuntimeException("O e-mail " + usuarioDTO.getEmail() + " já pertence a outro usuário.");
                     }
                 });
 
-                usuarioExistente.setEmail(usuarioDTO.getEmail());
-                usuarioExistente.setSenha(usuarioDTO.getSenha());
-                usuarioExistente.setTipoUsuario(usuarioDTO.getTipoUsuario());
+                usuario.setEmail(usuarioDTO.getEmail());
+                usuario.setSenha(usuarioDTO.getSenha());
+                usuario.setTipoUsuario(usuarioDTO.getTipoUsuario());
 
-                return usuarioRepository.save(usuarioExistente);
+                return usuarioRepository.save(usuario);
             });
     }
 

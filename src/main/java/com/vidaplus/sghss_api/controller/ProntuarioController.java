@@ -37,6 +37,13 @@ public class ProntuarioController {
             .map(record -> ResponseEntity.ok().body(record))
             .orElse(ResponseEntity.notFound().build());
     }
+    
+    @GetMapping("/paciente/{pacienteId}")
+    public ResponseEntity<Prontuario> findByPacienteId(@PathVariable Long pacienteId) {
+        return prontuarioService.buscarPorPacienteId(pacienteId)
+            .map(prontuario -> ResponseEntity.ok().body(prontuario))
+            .orElse(ResponseEntity.notFound().build());
+    }    
 
     @PostMapping
     public Prontuario create(@Valid @RequestBody ProntuarioDTO prontuarioDTO) {

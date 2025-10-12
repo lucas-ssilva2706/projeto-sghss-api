@@ -1,6 +1,12 @@
 package com.vidaplus.sghss_api.model;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vidaplus.sghss_api.model.enums.TipoUsuario;
@@ -19,29 +25,34 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
-	
+public class Usuario implements UserDetails {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotBlank(message = "É obrigatório informar o email")
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
-	
+
 	@NotBlank(message = "É obrigatório informar a senha")
 	@Column(name = "senha", nullable = false)
 	private String senha;
-	
+
 	@NotNull(message = "É obrigatório informar o tipo do usuário")
 	@Column(name = "tipo_usuario", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private TipoUsuario tipoUsuario;
-	
+
 	@OneToOne(mappedBy = "usuario")
 	@JsonBackReference("paciente-usuario")
 	private Paciente paciente;
-	
+
 	@OneToOne(mappedBy = "usuario")
 	@JsonBackReference("medico-usuario")
 	private Medico medico;
@@ -96,8 +107,8 @@ public class Usuario {
 
 	@Override
 	public String toString() {
-		return "Usuario [id=" + id + ", email=" + email + ", senha=" + senha + ", tipoUsuario="
-				+ tipoUsuario + ", paciente=" + paciente + ", medico=" + medico + "]";
+		return "Usuario [id=" + id + ", email=" + email + ", senha=" + senha + ", tipoUsuario=" + tipoUsuario
+				+ ", paciente=" + paciente + ", medico=" + medico + "]";
 	}
 
 	@Override
@@ -114,10 +125,44 @@ public class Usuario {
 		if (getClass() != obj.getClass())
 			return false;
 		Usuario other = (Usuario) obj;
-		return Objects.equals(email, other.email) && id == other.id
-				&& Objects.equals(medico, other.medico) && Objects.equals(paciente, other.paciente)
-				&& Objects.equals(senha, other.senha) && tipoUsuario == other.tipoUsuario;
+		return Objects.equals(email, other.email) && id == other.id && Objects.equals(medico, other.medico)
+				&& Objects.equals(paciente, other.paciente) && Objects.equals(senha, other.senha)
+				&& tipoUsuario == other.tipoUsuario;
 	}
-	
-	
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority(tipoUsuario.name()));
+	}
+
+	@Override
+	public String getPassword() {
+		return this.senha;
+	}
+
+	@Override
+	public String getUsername() {
+		return this.email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
 }

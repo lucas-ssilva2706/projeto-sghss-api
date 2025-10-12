@@ -6,8 +6,8 @@ import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,7 +36,7 @@ public class Prontuario {
 	@NotNull(message = "É obrigatório informar a idPaciente")
 	@OneToOne
 	@JoinColumn(name = "id_paciente", referencedColumnName = "id")
-	@JsonBackReference("paciente-prontuario")
+	@JsonManagedReference("paciente-prontuario")
 	private Paciente paciente;
 	
 	@JsonIgnore

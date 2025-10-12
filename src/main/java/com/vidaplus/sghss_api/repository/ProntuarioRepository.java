@@ -6,6 +6,6 @@ import com.vidaplus.sghss_api.model.Prontuario;
 
 public interface ProntuarioRepository extends JpaRepository<Prontuario, Long> {
 
-    Optional<Prontuario> findByPacienteId(Long pacienteId);
+    Optional<Prontuario> findByPaciente_Id(Long pacienteId);
     
 }
