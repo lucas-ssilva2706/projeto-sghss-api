@@ -33,8 +33,7 @@ public class Consulta {
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime dataHoras;
 
-	@NotNull(message = "É obrigatório informar a situação da consulta")
-	@Column(name = "situacao", nullable = false)
+	@Column(name = "situacao")
 	@Enumerated(EnumType.STRING)
 	private SituacaoConsulta situacaoConsulta;
 

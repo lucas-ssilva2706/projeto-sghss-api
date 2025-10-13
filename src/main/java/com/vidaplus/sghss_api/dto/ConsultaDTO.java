@@ -6,58 +6,57 @@ import jakarta.validation.constraints.NotNull;
 
 public class ConsultaDTO {
 
-    @NotNull(message = "A data e a hora da consulta são obrigatórias.")
-    private LocalDateTime dataHoras;
+	@NotNull(message = "A data e a hora da consulta são obrigatórias.")
+	private LocalDateTime dataHoras;
 
-    @NotNull(message = "O tipo da consulta é obrigatório.")
-    private TipoConsulta tipoConsulta;
+	@NotNull(message = "O tipo da consulta é obrigatório.")
+	private TipoConsulta tipoConsulta;
 
-    @NotNull(message = "O ID do paciente é obrigatório.")
-    private Long pacienteId;
-    
-    @NotNull(message = "O ID do médico é obrigatório.")
-    private Long medicoId;
-    
-    private Long unidadeHospitalarId;
+	@NotNull(message = "O ID do paciente é obrigatório.")
+	private Long pacienteId;
 
-    
-    public LocalDateTime getDataHoras() {
-        return dataHoras;
-    }
+	@NotNull(message = "O ID do médico é obrigatório.")
+	private Long medicoId;
 
-    public void setDataHoras(LocalDateTime dataHoras) {
-        this.dataHoras = dataHoras;
-    }
-    
-    public TipoConsulta getTipoConsulta() {
-        return tipoConsulta;
-    }
+	private Long unidadeHospitalarId;
 
-    public void setTipoConsulta(TipoConsulta tipoConsulta) {
-        this.tipoConsulta = tipoConsulta;
-    }
+	public LocalDateTime getDataHoras() {
+		return dataHoras;
+	}
 
-    public Long getPacienteId() {
-        return pacienteId;
-    }
+	public void setDataHoras(LocalDateTime dataHoras) {
+		this.dataHoras = dataHoras;
+	}
 
-    public void setPacienteId(Long pacienteId) {
-        this.pacienteId = pacienteId;
-    }
+	public TipoConsulta getTipoConsulta() {
+		return tipoConsulta;
+	}
 
-    public Long getMedicoId() {
-        return medicoId;
-    }
+	public void setTipoConsulta(TipoConsulta tipoConsulta) {
+		this.tipoConsulta = tipoConsulta;
+	}
 
-    public void setMedicoId(Long medicoId) {
-        this.medicoId = medicoId;
-    }
+	public Long getPacienteId() {
+		return pacienteId;
+	}
 
-    public Long getUnidadeHospitalarId() {
-        return unidadeHospitalarId;
-    }
+	public void setPacienteId(Long pacienteId) {
+		this.pacienteId = pacienteId;
+	}
 
-    public void setUnidadeHospitalarId(Long unidadeHospitalarId) {
-        this.unidadeHospitalarId = unidadeHospitalarId;
-    }
+	public Long getMedicoId() {
+		return medicoId;
+	}
+
+	public void setMedicoId(Long medicoId) {
+		this.medicoId = medicoId;
+	}
+
+	public Long getUnidadeHospitalarId() {
+		return unidadeHospitalarId;
+	}
+
+	public void setUnidadeHospitalarId(Long unidadeHospitalarId) {
+		this.unidadeHospitalarId = unidadeHospitalarId;
+	}
 }
