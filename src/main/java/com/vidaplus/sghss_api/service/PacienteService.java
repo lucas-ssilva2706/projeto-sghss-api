@@ -33,6 +33,32 @@ public class PacienteService {
 		return pacienteRepository.findById(id);
 	}
 	
+    public Paciente criarPaciente(PacienteDTO pacienteDTO) {
+        if (pacienteRepository.findByCpf(pacienteDTO.getCpf()).isPresent()) {
+            throw new RuntimeException("Este CPF já está cadastrado.");
+        }
+
+        if (pacienteRepository.findByUsuario_Id(pacienteDTO.getUsuarioId()).isPresent()) {
+            throw new RuntimeException("Este ID de usuário já está associado a outro paciente.");
+        }
+        
+        Usuario usuario = usuarioRepository.findById(pacienteDTO.getUsuarioId())
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + pacienteDTO.getUsuarioId()));
+
+        if (usuario.getTipoUsuario() != TipoUsuario.PACIENTE) {
+            throw new IllegalArgumentException("Não é possível cadastrar um paciente para um usuário que não seja do tipo PACIENTE.");
+        }      
+
+        Paciente novoPaciente = new Paciente();
+        novoPaciente.setNome(pacienteDTO.getNome());
+        novoPaciente.setCpf(pacienteDTO.getCpf());
+        novoPaciente.setDataNascimento(pacienteDTO.getDataNascimento());
+        novoPaciente.setTelefone(pacienteDTO.getTelefone());
+        novoPaciente.setUsuario(usuario);
+
+        return pacienteRepository.save(novoPaciente);
+    }
+
     public Paciente buscarMeuPerfil() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -50,34 +76,6 @@ public class PacienteService {
         return pacienteRepository.findByUsuario_Id(usuario.getId())
             .orElseThrow(() -> new RuntimeException("Nenhum perfil de paciente encontrado para o usuário logado."));
     }
-
-    public Paciente criarPaciente(PacienteDTO pacienteDTO) {
-        if (pacienteRepository.findByCpf(pacienteDTO.getCpf()).isPresent()) {
-            throw new RuntimeException("Este CPF já está cadastrado.");
-        }
-
-        if (pacienteRepository.findByUsuario_Id(pacienteDTO.getUsuarioId()).isPresent()) {
-            throw new RuntimeException("Este ID de usuário já está associado a outro paciente.");
-        }
-        
-        Usuario usuario = usuarioRepository.findById(pacienteDTO.getUsuarioId())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + pacienteDTO.getUsuarioId()));
-
-        if (usuario.getTipoUsuario() != TipoUsuario.PACIENTE) {
-            throw new IllegalArgumentException("Não é possível cadastrar um paciente para um usuário que não seja do tipo PACIENTE.");
-        }      
-
-        // Cria e salva a nova instância do Paciente
-        Paciente novoPaciente = new Paciente();
-        novoPaciente.setNome(pacienteDTO.getNome());
-        novoPaciente.setCpf(pacienteDTO.getCpf());
-        novoPaciente.setDataNascimento(pacienteDTO.getDataNascimento());
-        novoPaciente.setTelefone(pacienteDTO.getTelefone());
-        novoPaciente.setUsuario(usuario);
-
-        return pacienteRepository.save(novoPaciente);
-    }
-
 	public Optional<Paciente> atualizarPaciente(Long id, PacienteDTO pacienteDTO) {
 
 		return pacienteRepository.findById(id).map(pacienteExistente -> {
