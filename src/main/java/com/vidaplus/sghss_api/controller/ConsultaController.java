@@ -43,7 +43,7 @@ public class ConsultaController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'PACIENTE')")
     public Consulta create(@Valid @RequestBody ConsultaDTO consultaDTO) {
         return consultaService.criarConsulta(consultaDTO);
     }

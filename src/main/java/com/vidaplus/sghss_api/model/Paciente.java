@@ -9,9 +9,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.vidaplus.sghss_api.config.crypto.CpfConverter;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +41,7 @@ public class Paciente {
 	@NotBlank(message = "É obrigatório informar o CPF do paciente")
 	@Size(min = 11, max = 14, message = "O CPF deve ter entre 11 e 14 caracteres")
 	@Column(name="cpf", nullable=false, unique = true)
+	@Convert(converter = CpfConverter.class)
 	private String cpf;
 
 	@NotNull(message = "É obrigatório informar a Data de Nascimento do paciente")
