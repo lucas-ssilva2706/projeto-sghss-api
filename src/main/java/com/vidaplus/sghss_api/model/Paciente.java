@@ -39,7 +39,7 @@ public class Paciente {
 	private String nome;
 	
 	@NotBlank(message = "É obrigatório informar o CPF do paciente")
-	@Size(min = 11, max = 14, message = "O CPF deve ter entre 11 e 14 caracteres")
+	@Size(min = 11, message = "O CPF deve ter no mínimo 11 caracteres")
 	@Column(name="cpf", nullable=false, unique = true)
 	@Convert(converter = CpfConverter.class)
 	private String cpf;
