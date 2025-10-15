@@ -2,12 +2,15 @@ package com.vidaplus.sghss_api.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.vidaplus.sghss_api.dto.PacienteDTO;
+import com.vidaplus.sghss_api.dto.PacienteResponseDTO;
+import com.vidaplus.sghss_api.mapper.PacienteMapper;
 import com.vidaplus.sghss_api.model.Paciente;
 import com.vidaplus.sghss_api.model.Usuario;
 import com.vidaplus.sghss_api.model.enums.TipoUsuario;
@@ -25,58 +28,58 @@ public class PacienteService {
 		this.usuarioRepository = usuarioRepository;
 	}
 
-	public List<Paciente> listarTodos() {
-		return pacienteRepository.findAll();
+	public List<PacienteResponseDTO> listarTodos() {
+		return pacienteRepository.findAll().stream().map(PacienteMapper::toDTO).collect(Collectors.toList());
 	}
 
-	public Optional<Paciente> buscarPorId(Long id) {
-		return pacienteRepository.findById(id);
+	public Optional<PacienteResponseDTO> buscarPorId(long id) {
+		return pacienteRepository.findById(id).map(PacienteMapper::toDTO);
 	}
-	
-    public Paciente criarPaciente(PacienteDTO pacienteDTO) {
-        if (pacienteRepository.findByCpf(pacienteDTO.getCpf()).isPresent()) {
-            throw new RuntimeException("Este CPF já está cadastrado.");
-        }
 
-        if (pacienteRepository.findByUsuario_Id(pacienteDTO.getUsuarioId()).isPresent()) {
-            throw new RuntimeException("Este ID de usuário já está associado a outro paciente.");
-        }
-        
-        Usuario usuario = usuarioRepository.findById(pacienteDTO.getUsuarioId())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + pacienteDTO.getUsuarioId()));
+	public PacienteResponseDTO criarPaciente(PacienteDTO pacienteDTO) {
+		if (pacienteRepository.findByCpf(pacienteDTO.getCpf()).isPresent()) {
+			throw new RuntimeException("Este CPF já está cadastrado.");
+		}
 
-        if (usuario.getTipoUsuario() != TipoUsuario.PACIENTE) {
-            throw new IllegalArgumentException("Não é possível cadastrar um paciente para um usuário que não seja do tipo PACIENTE.");
-        }      
+		if (pacienteRepository.findByUsuario_Id(pacienteDTO.getUsuarioId()).isPresent()) {
+			throw new RuntimeException("Este ID de usuário já está associado a outro paciente.");
+		}
 
-        Paciente novoPaciente = new Paciente();
-        novoPaciente.setNome(pacienteDTO.getNome());
-        novoPaciente.setCpf(pacienteDTO.getCpf());
-        novoPaciente.setDataNascimento(pacienteDTO.getDataNascimento());
-        novoPaciente.setTelefone(pacienteDTO.getTelefone());
-        novoPaciente.setUsuario(usuario);
+		Usuario usuario = usuarioRepository.findById(pacienteDTO.getUsuarioId()).orElseThrow(
+				() -> new RuntimeException("Usuário não encontrado com o ID: " + pacienteDTO.getUsuarioId()));
 
-        return pacienteRepository.save(novoPaciente);
-    }
+		if (usuario.getTipoUsuario() != TipoUsuario.PACIENTE) {
+			throw new IllegalArgumentException(
+					"Não é possível cadastrar um paciente para um usuário que não seja do tipo PACIENTE.");
+		}
 
-    public Paciente buscarMeuPerfil() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Paciente novoPaciente = new Paciente();
+		novoPaciente.setNome(pacienteDTO.getNome());
+		novoPaciente.setCpf(pacienteDTO.getCpf());
+		novoPaciente.setDataNascimento(pacienteDTO.getDataNascimento());
+		novoPaciente.setTelefone(pacienteDTO.getTelefone());
+		novoPaciente.setUsuario(usuario);
+		
+		Paciente pacienteSalvo = pacienteRepository.save(novoPaciente);
 
-        String emailUsuarioLogado;
+		return PacienteMapper.toDTO(pacienteSalvo);
+	}
 
-        if (principal instanceof UserDetails) {
-            emailUsuarioLogado = ((UserDetails) principal).getUsername();
-        } else {
-            emailUsuarioLogado = principal.toString();
-        }
+	public PacienteResponseDTO buscarMeuPerfil() {
 
-        Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado no token."));
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String emailUsuarioLogado = ((UserDetails) principal).getUsername();
 
-        return pacienteRepository.findByUsuario_Id(usuario.getId())
-            .orElseThrow(() -> new RuntimeException("Nenhum perfil de paciente encontrado para o usuário logado."));
-    }
-	public Optional<Paciente> atualizarPaciente(Long id, PacienteDTO pacienteDTO) {
+		Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
+				.orElseThrow(() -> new RuntimeException("Usuário não encontrado no token."));
+
+		Paciente paciente = pacienteRepository.findByUsuario_Id(usuario.getId())
+				.orElseThrow(() -> new RuntimeException("Nenhum perfil de paciente encontrado para o usuário logado."));
+
+		return PacienteMapper.toDTO(paciente);
+	}
+
+	public Optional<PacienteResponseDTO> atualizarPaciente(Long id, PacienteDTO pacienteDTO) {
 
 		return pacienteRepository.findById(id).map(pacienteExistente -> {
 
@@ -95,7 +98,9 @@ public class PacienteService {
 			pacienteExistente.setDataNascimento(pacienteDTO.getDataNascimento());
 			pacienteExistente.setTelefone(pacienteDTO.getTelefone());
 
-			return pacienteRepository.save(pacienteExistente);
+			Paciente pacienteSalvo = pacienteRepository.save(pacienteExistente);
+			
+			return PacienteMapper.toDTO(pacienteSalvo);
 		});
 	}
 

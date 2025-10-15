@@ -30,7 +30,7 @@ public class UnidadeHospitalar {
 	@Column(name = "endereco", nullable = false, unique = true)
 	private String endereco;
 	
-	@JsonIgnore // Evita que as consultas sejam incluídas no JSON do paciente, prevenindo loops
+	@JsonIgnore
 	@OneToMany(mappedBy = "unidadeHospitalar")
 	private List<Consulta> consultas;
 

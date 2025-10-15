@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vidaplus.sghss_api.dto.AuthDTO;
 import com.vidaplus.sghss_api.dto.TokenDTO;
 import com.vidaplus.sghss_api.dto.UsuarioDTO;
-import com.vidaplus.sghss_api.model.Usuario;
+import com.vidaplus.sghss_api.dto.UsuarioResponseDTO;
 import com.vidaplus.sghss_api.service.AuthService;
 import com.vidaplus.sghss_api.service.UsuarioService;
 
@@ -34,8 +34,8 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<Usuario> register(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-		Usuario novoUsuario = usuarioService.criarUsuario(usuarioDTO);
-		return ResponseEntity.ok(novoUsuario);
+	public ResponseEntity<UsuarioResponseDTO> register(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+		UsuarioResponseDTO novoUsuarioDTO = usuarioService.criarUsuario(usuarioDTO);
+		return ResponseEntity.ok(novoUsuarioDTO);
 	}
 }

@@ -43,6 +43,14 @@ public class Prontuario {
 	@OneToMany(mappedBy = "prontuario")
 	private List<RegistroProntuario> registroProntuario;
 
+	public List<RegistroProntuario> getRegistroProntuario() {
+		return registroProntuario;
+	}
+
+	public void setRegistroProntuario(List<RegistroProntuario> registroProntuario) {
+		this.registroProntuario = registroProntuario;
+	}
+
 	public Long getId() {
 		return id;
 	}

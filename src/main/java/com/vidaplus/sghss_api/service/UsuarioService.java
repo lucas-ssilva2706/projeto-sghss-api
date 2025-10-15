@@ -2,10 +2,14 @@ package com.vidaplus.sghss_api.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.vidaplus.sghss_api.dto.UsuarioDTO;
+import com.vidaplus.sghss_api.dto.UsuarioResponseDTO;
+import com.vidaplus.sghss_api.mapper.UsuarioMapper;
 import com.vidaplus.sghss_api.model.Usuario;
 import com.vidaplus.sghss_api.repository.UsuarioRepository;
 
@@ -20,15 +24,15 @@ public class UsuarioService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public List<Usuario> listarTodos() {
-		return usuarioRepository.findAll();
+	public List<UsuarioResponseDTO> listarTodos() {
+		return usuarioRepository.findAll().stream().map(UsuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
-	public Optional<Usuario> buscarPorId(Long id) {
-		return usuarioRepository.findById(id);
+	public Optional<UsuarioResponseDTO> buscarPorId(long id) {
+		return usuarioRepository.findById(id).map(UsuarioMapper::toDTO);
 	}
 
-	public Usuario criarUsuario(UsuarioDTO usuarioDTO) {
+	public UsuarioResponseDTO criarUsuario(UsuarioDTO usuarioDTO) {
 		if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
 			throw new RuntimeException("Este e-mail já está em uso.");
 		}
@@ -38,26 +42,33 @@ public class UsuarioService {
 		novoUsuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
 		novoUsuario.setTipoUsuario(usuarioDTO.getTipoUsuario());
 
-		return usuarioRepository.save(novoUsuario);
+		Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
+
+		return UsuarioMapper.toDTO(usuarioSalvo);
 	}
 
-	public Optional<Usuario> atualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
-		return usuarioRepository.findById(id).map(usuario -> {
-			usuarioRepository.findByEmail(usuarioDTO.getEmail()).ifPresent(usuarioEmail -> {
-				if (usuarioEmail.getId() != id) {
+	public Optional<UsuarioResponseDTO> atualizarUsuario(long id, UsuarioDTO usuarioDTO) {
+		return usuarioRepository.findById(id).map(usuarioExistente -> {
+			usuarioRepository.findByEmail(usuarioDTO.getEmail()).ifPresent(usuarioComEmail -> {
+				if (usuarioComEmail.getId() != id) {
 					throw new RuntimeException("O e-mail " + usuarioDTO.getEmail() + " já pertence a outro usuário.");
 				}
 			});
 
-			usuario.setEmail(usuarioDTO.getEmail());
-			usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
-			usuario.setTipoUsuario(usuarioDTO.getTipoUsuario());
+			usuarioExistente.setEmail(usuarioDTO.getEmail());
+			usuarioExistente.setTipoUsuario(usuarioDTO.getTipoUsuario());
 
-			return usuarioRepository.save(usuario);
+			if (usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
+				usuarioExistente.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+			}
+
+			Usuario usuarioAtualizado = usuarioRepository.save(usuarioExistente);
+
+			return UsuarioMapper.toDTO(usuarioAtualizado);
 		});
 	}
 
-	public boolean deletarUsuario(Long id) {
+	public boolean deletarUsuario(long id) {
 		if (usuarioRepository.existsById(id)) {
 			usuarioRepository.deleteById(id);
 			return true;

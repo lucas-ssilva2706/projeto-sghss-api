@@ -2,12 +2,15 @@ package com.vidaplus.sghss_api.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.vidaplus.sghss_api.dto.MedicoDTO;
+import com.vidaplus.sghss_api.dto.MedicoResponseDTO;
+import com.vidaplus.sghss_api.mapper.MedicoMapper;
 import com.vidaplus.sghss_api.model.Medico;
 import com.vidaplus.sghss_api.model.Usuario;
 import com.vidaplus.sghss_api.model.enums.TipoUsuario;
@@ -17,93 +20,92 @@ import com.vidaplus.sghss_api.repository.UsuarioRepository;
 @Service
 public class MedicoService {
 
-    private final MedicoRepository medicoRepository;
-    private final UsuarioRepository usuarioRepository;
+	private final MedicoRepository medicoRepository;
+	private final UsuarioRepository usuarioRepository;
 
-    public MedicoService(MedicoRepository medicoRepository, UsuarioRepository usuarioRepository) {
-        this.medicoRepository = medicoRepository;
-        this.usuarioRepository = usuarioRepository;
-    }
+	public MedicoService(MedicoRepository medicoRepository, UsuarioRepository usuarioRepository) {
+		this.medicoRepository = medicoRepository;
+		this.usuarioRepository = usuarioRepository;
+	}
 
-    public List<Medico> listarTodos() {
-        return medicoRepository.findAll();
-    }
+	public List<MedicoResponseDTO> listarTodos() {
+		return medicoRepository.findAll().stream().map(MedicoMapper::toDTO).collect(Collectors.toList());
+	}
 
-    public Optional<Medico> buscarPorId(Long id) {
-        return medicoRepository.findById(id);
-    }
-    
-    public Medico buscarMeuPerfil() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public Optional<MedicoResponseDTO> buscarPorId(long id) {
+		return medicoRepository.findById(id).map(MedicoMapper::toDTO);
+	}
 
-        String emailUsuarioLogado;
+	public MedicoResponseDTO buscarMeuPerfil() {
 
-        if (principal instanceof UserDetails) {
-            emailUsuarioLogado = ((UserDetails) principal).getUsername();
-        } else {
-            emailUsuarioLogado = principal.toString();
-        }
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String emailUsuarioLogado = ((UserDetails) principal).getUsername();
 
-        Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado no token."));
+		Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
+				.orElseThrow(() -> new RuntimeException("Usuário não encontrado no token."));
 
-        return medicoRepository.findByUsuario_Id(usuario.getId())
-            .orElseThrow(() -> new RuntimeException("Nenhum perfil de médico encontrado para o usuário logado."));
-    }
+		Medico medico = medicoRepository.findByUsuario_Id(usuario.getId())
+				.orElseThrow(() -> new RuntimeException("Nenhum perfil de médico encontrado para o usuário logado."));
 
-    public Medico criarMedico(MedicoDTO medicoDTO) {
-        if (medicoRepository.findByCrm(medicoDTO.getCrm()).isPresent()) {
-            throw new RuntimeException("Este CRM já está cadastrado.");
-        }
+		return MedicoMapper.toDTO(medico);
+	}
 
-        if (medicoRepository.findByUsuario_Id(medicoDTO.getUsuarioId()).isPresent()) {
-            throw new RuntimeException("Este ID de usuário já está associado a outro médico.");
-        }        
+	public MedicoResponseDTO criarMedico(MedicoDTO medicoDTO) {
+		if (medicoRepository.findByCrm(medicoDTO.getCrm()).isPresent()) {
+			throw new RuntimeException("Este CRM já está cadastrado.");
+		}
 
-        Usuario usuario = usuarioRepository.findById(medicoDTO.getUsuarioId())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + medicoDTO.getUsuarioId()));
+		if (medicoRepository.findByUsuario_Id(medicoDTO.getUsuarioId()).isPresent()) {
+			throw new RuntimeException("Este ID de usuário já está associado a outro médico.");
+		}
 
-        if (usuario.getTipoUsuario() != TipoUsuario.MEDICO) {
-            // Se não for, lança uma exceção
-            throw new IllegalArgumentException("Não é possível cadastrar um médico para um usuário que não seja do tipo MEDICO.");
-        }
+		Usuario usuario = usuarioRepository.findById(medicoDTO.getUsuarioId()).orElseThrow(
+				() -> new RuntimeException("Usuário não encontrado com o ID: " + medicoDTO.getUsuarioId()));
 
-        Medico novoMedico = new Medico();
-        
-        novoMedico.setNome(medicoDTO.getNome());
-        novoMedico.setCrm(medicoDTO.getCrm());
-        novoMedico.setEspecialidade(medicoDTO.getEspecialidade());
-        novoMedico.setUsuario(usuario);
+		if (usuario.getTipoUsuario() != TipoUsuario.MEDICO) {
+			throw new IllegalArgumentException(
+					"Não é possível cadastrar um médico para um usuário que não seja do tipo MEDICO.");
+		}
 
-        return medicoRepository.save(novoMedico);
-    }
+		Medico novoMedico = new Medico();
 
-    public Optional<Medico> atualizarMedico(Long id, MedicoDTO medicoDTO) {
-        return medicoRepository.findById(id)
-            .map(medicoExistente -> {
-                if (!medicoExistente.getUsuario().getId().equals(medicoDTO.getUsuarioId())) {
-                    throw new IllegalArgumentException("Não é permitido alterar o usuário associado a um médico.");
-                }
-                
-                medicoRepository.findByCrm(medicoDTO.getCrm()).ifPresent(medicoComCrm -> {
-                    if (!medicoComCrm.getId().equals(id)) {
-                        throw new RuntimeException("O CRM " + medicoDTO.getCrm() + " já pertence a outro médico.");
-                    }
-                });
+		novoMedico.setNome(medicoDTO.getNome());
+		novoMedico.setCrm(medicoDTO.getCrm());
+		novoMedico.setEspecialidade(medicoDTO.getEspecialidade());
+		novoMedico.setUsuario(usuario);
 
-                medicoExistente.setNome(medicoDTO.getNome());
-                medicoExistente.setCrm(medicoDTO.getCrm());
-                medicoExistente.setEspecialidade(medicoDTO.getEspecialidade());
+		Medico medicoSalvo = medicoRepository.save(novoMedico);
 
-                return medicoRepository.save(medicoExistente);
-            });
-    }
+		return MedicoMapper.toDTO(medicoSalvo);
+	}
 
-    public boolean deletarMedico(Long id) {
-        if (medicoRepository.existsById(id)) {
-            medicoRepository.deleteById(id);
-            return true;
-        }
-        return false;
-    }
+	public Optional<MedicoResponseDTO> atualizarMedico(Long id, MedicoDTO medicoDTO) {
+		return medicoRepository.findById(id).map(medicoExistente -> {
+			if (!medicoExistente.getUsuario().getId().equals(medicoDTO.getUsuarioId())) {
+				throw new IllegalArgumentException("Não é permitido alterar o usuário associado a um médico.");
+			}
+
+			medicoRepository.findByCrm(medicoDTO.getCrm()).ifPresent(medicoComCrm -> {
+				if (!medicoComCrm.getId().equals(id)) {
+					throw new RuntimeException("O CRM " + medicoDTO.getCrm() + " já pertence a outro médico.");
+				}
+			});
+
+			medicoExistente.setNome(medicoDTO.getNome());
+			medicoExistente.setCrm(medicoDTO.getCrm());
+			medicoExistente.setEspecialidade(medicoDTO.getEspecialidade());
+
+			Medico medicoSalvo = medicoRepository.save(medicoExistente);
+
+			return MedicoMapper.toDTO(medicoSalvo);
+		});
+	}
+
+	public boolean deletarMedico(Long id) {
+		if (medicoRepository.existsById(id)) {
+			medicoRepository.deleteById(id);
+			return true;
+		}
+		return false;
+	}
 }

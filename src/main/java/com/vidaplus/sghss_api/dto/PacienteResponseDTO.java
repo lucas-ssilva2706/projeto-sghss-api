@@ -2,24 +2,21 @@ package com.vidaplus.sghss_api.dto;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-public class PacienteDTO {
-
-	@NotBlank(message = "O nome não pode estar em branco.")
+public class PacienteResponseDTO {
+	private Long id;
 	private String nome;
-
-	@NotBlank(message = "O CPF não pode estar em branco.")
 	private String cpf;
-
-	@NotNull(message = "A data de nascimento é obrigatória.")
 	private LocalDate dataNascimento;
-
 	private String telefone;
+	private UsuarioResponseDTO usuario;
 
-	@NotNull(message = "O ID do usuário é obrigatório.")
-	private Long usuarioId;
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getNome() {
 		return nome;
@@ -53,12 +50,11 @@ public class PacienteDTO {
 		this.telefone = telefone;
 	}
 
-	public Long getUsuarioId() {
-		return usuarioId;
+	public UsuarioResponseDTO getUsuario() {
+		return usuario;
 	}
 
-	public void setUsuarioId(Long usuarioId) {
-		this.usuarioId = usuarioId;
+	public void setUsuario(UsuarioResponseDTO usuario) {
+		this.usuario = usuario;
 	}
-
 }

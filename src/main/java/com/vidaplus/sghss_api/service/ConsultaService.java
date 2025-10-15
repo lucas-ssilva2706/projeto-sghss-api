@@ -3,9 +3,13 @@ package com.vidaplus.sghss_api.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.vidaplus.sghss_api.dto.ConsultaDTO;
+import com.vidaplus.sghss_api.dto.ConsultaResponseDTO;
+import com.vidaplus.sghss_api.mapper.ConsultaMapper;
 import com.vidaplus.sghss_api.model.Consulta;
 import com.vidaplus.sghss_api.model.Medico;
 import com.vidaplus.sghss_api.model.Paciente;
@@ -25,7 +29,6 @@ public class ConsultaService {
 	private final MedicoRepository medicoRepository;
 	private final UnidadeHospitalarRepository unidadeRepository;
 
-	// Injetamos todos os repositórios necessários para as validações
 	public ConsultaService(ConsultaRepository consultaRepository, PacienteRepository pacienteRepository,
 			MedicoRepository medicoRepository, UnidadeHospitalarRepository unidadeRepository) {
 		this.consultaRepository = consultaRepository;
@@ -34,15 +37,15 @@ public class ConsultaService {
 		this.unidadeRepository = unidadeRepository;
 	}
 
-	public List<Consulta> listarTodas() {
-		return consultaRepository.findAll();
+	public List<ConsultaResponseDTO> listarTodas() {
+		return consultaRepository.findAll().stream().map(ConsultaMapper::toDTO).collect(Collectors.toList());
 	}
 
-	public Optional<Consulta> buscarPorId(long id) {
-		return consultaRepository.findById(id);
+	public Optional<ConsultaResponseDTO> buscarPorId(long id) {
+		return consultaRepository.findById(id).map(ConsultaMapper::toDTO);
 	}
 
-	public Consulta criarConsulta(ConsultaDTO consultaDTO) {
+	public ConsultaResponseDTO criarConsulta(ConsultaDTO consultaDTO) {
 
 		if (consultaDTO.getTipoConsulta() == TipoConsulta.PRESENCIAL && consultaDTO.getUnidadeHospitalarId() == null) {
 			throw new IllegalArgumentException(
@@ -80,45 +83,52 @@ public class ConsultaService {
 		novaConsulta.setMedico(medico);
 		novaConsulta.setUnidadeHospitalar(unidade);
 
-		return consultaRepository.save(novaConsulta);
+		Consulta consultaSalva = consultaRepository.save(novaConsulta);
+
+		return ConsultaMapper.toDTO(consultaSalva);
 	}
 
-	public Optional<Consulta> realizarConsulta(Long id) {
+	public Optional<ConsultaResponseDTO> realizarConsulta(Long id) {
 		return consultaRepository.findById(id).map(consulta -> {
 			if (consulta.getSituacaoConsulta() != SituacaoConsulta.AGENDADA) {
 				throw new IllegalStateException(
 						"Apenas consultas com a situação 'AGENDADA' podem ser marcadas como 'REALIZADA'.");
 			}
 			consulta.setSituacaoConsulta(SituacaoConsulta.REALIZADA);
-			return consultaRepository.save(consulta);
+			Consulta consultaSalva = consultaRepository.save(consulta);
+			return ConsultaMapper.toDTO(consultaSalva);
 		});
 	}
 
-	public Optional<Consulta> cancelarConsulta(Long id) {
+	public Optional<ConsultaResponseDTO> cancelarConsulta(Long id) {
 		return consultaRepository.findById(id).map(consulta -> {
 			if (consulta.getSituacaoConsulta() == SituacaoConsulta.REALIZADA) {
 				throw new IllegalStateException("Não é possível cancelar uma consulta que já foi realizada.");
 			}
 			consulta.setSituacaoConsulta(SituacaoConsulta.CANCELADA);
-			return consultaRepository.save(consulta);
+			Consulta consultaSalva = consultaRepository.save(consulta);
+			return ConsultaMapper.toDTO(consultaSalva);
 		});
 	}
 
-	public Optional<Consulta> informarFaltaConsulta(Long id) {
+	public Optional<ConsultaResponseDTO> informarFaltaConsulta(Long id) {
 		return consultaRepository.findById(id).map(consulta -> {
 			if (consulta.getSituacaoConsulta() == SituacaoConsulta.REALIZADA) {
 				throw new IllegalStateException("Não é possível informar falta numa consulta que já foi realizada.");
 			}
 			consulta.setSituacaoConsulta(SituacaoConsulta.NAO_COMPARECEU);
-			return consultaRepository.save(consulta);
+			Consulta consultaSalva = consultaRepository.save(consulta);
+			return ConsultaMapper.toDTO(consultaSalva);
 		});
 	}
-	
-    public List<Consulta> buscarHistoricoPorPacienteId(Long pacienteId) {
-        return consultaRepository.findByPaciente_Id(pacienteId);
-    }
-    
-    public List<Consulta> buscarConsultasPorMedicoId(Long medicoId) {
-        return consultaRepository.findByMedico_Id(medicoId);
-    }
+
+	public List<ConsultaResponseDTO> buscarHistoricoPorPacienteId(Long pacienteId) {
+		return consultaRepository.findByPaciente_Id(pacienteId).stream().map(ConsultaMapper::toDTO)
+				.collect(Collectors.toList());
+	}
+
+	public List<ConsultaResponseDTO> buscarConsultasPorMedicoId(Long medicoId) {
+		return consultaRepository.findByMedico_Id(medicoId).stream().map(ConsultaMapper::toDTO)
+				.collect(Collectors.toList());
+	}
 }

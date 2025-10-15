@@ -2,8 +2,13 @@ package com.vidaplus.sghss_api.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+
 import com.vidaplus.sghss_api.dto.RegistroProntuarioDTO;
+import com.vidaplus.sghss_api.dto.RegistroProntuarioResponseDTO;
+import com.vidaplus.sghss_api.mapper.RegistroProntuarioMapper;
 import com.vidaplus.sghss_api.model.Consulta;
 import com.vidaplus.sghss_api.model.Prontuario;
 import com.vidaplus.sghss_api.model.RegistroProntuario;
@@ -25,15 +30,15 @@ public class RegistroProntuarioService {
 		this.consultaRepository = consultaRepository;
 	}
 
-	public List<RegistroProntuario> listarTodos() {
-		return registroRepository.findAll();
+	public List<RegistroProntuarioResponseDTO> listarTodos() {
+		return registroRepository.findAll().stream().map(RegistroProntuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
-	public Optional<RegistroProntuario> buscarPorId(Long id) {
-		return registroRepository.findById(id);
+	public Optional<RegistroProntuarioResponseDTO> buscarPorId(long id) {
+		return registroRepository.findById(id).map(RegistroProntuarioMapper::toDTO);
 	}
 
-	public RegistroProntuario criarRegistro(RegistroProntuarioDTO registroDTO) {
+	public RegistroProntuarioResponseDTO criarRegistro(RegistroProntuarioDTO registroDTO) {
 		Prontuario prontuario = prontuarioRepository.findById(registroDTO.getProntuarioId()).orElseThrow(
 				() -> new RuntimeException("Prontuário não encontrado com o ID: " + registroDTO.getProntuarioId()));
 
@@ -45,7 +50,9 @@ public class RegistroProntuarioService {
 		novoRegistro.setProntuario(prontuario);
 		novoRegistro.setConsulta(consulta);
 
-		return registroRepository.save(novoRegistro);
+		RegistroProntuario registroSalvo = registroRepository.save(novoRegistro);
+
+		return RegistroProntuarioMapper.toDTO(registroSalvo);
 	}
 
 	public boolean deletarRegistro(Long id) {

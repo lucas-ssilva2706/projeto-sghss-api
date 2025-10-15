@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vidaplus.sghss_api.dto.ConsultaResponseDTO;
 import com.vidaplus.sghss_api.dto.MedicoDTO;
-import com.vidaplus.sghss_api.model.Consulta;
-import com.vidaplus.sghss_api.model.Medico;
+import com.vidaplus.sghss_api.dto.MedicoResponseDTO;
 import com.vidaplus.sghss_api.service.ConsultaService;
 import com.vidaplus.sghss_api.service.MedicoService;
 
@@ -35,13 +35,13 @@ public class MedicoController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<Medico> findAll() {
+    public List<MedicoResponseDTO> findAll() {
         return medicoService.listarTodos();
     }
 
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Medico> findById(@PathVariable Long id) {
+    public ResponseEntity<MedicoResponseDTO> findById(@PathVariable long id) {
         return medicoService.buscarPorId(id)
             .map(record -> ResponseEntity.ok().body(record))
             .orElse(ResponseEntity.notFound().build());
@@ -49,20 +49,20 @@ public class MedicoController {
     
     @GetMapping("/meu-perfil")
     @PreAuthorize("hasAuthority('MEDICO')")
-    public ResponseEntity<Medico> getMeuPerfil() {
-        Medico medico = medicoService.buscarMeuPerfil();
-        return ResponseEntity.ok(medico);
-    }    
+    public ResponseEntity<MedicoResponseDTO> getMeuPerfil() {
+        MedicoResponseDTO medicoDTO = medicoService.buscarMeuPerfil();
+        return ResponseEntity.ok(medicoDTO);
+    }   
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Medico create(@Valid @RequestBody MedicoDTO medicoDTO) {
+    public MedicoResponseDTO create(@Valid @RequestBody MedicoDTO medicoDTO) {
         return medicoService.criarMedico(medicoDTO);
     }
 
     @PutMapping(value = "/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Medico> update(@PathVariable Long id, @Valid @RequestBody MedicoDTO medicoDTO) {
+    public ResponseEntity<MedicoResponseDTO> update(@PathVariable Long id, @Valid @RequestBody MedicoDTO medicoDTO) {
         return medicoService.atualizarMedico(id, medicoDTO)
             .map(updatedMedico -> ResponseEntity.ok().body(updatedMedico))
             .orElse(ResponseEntity.notFound().build());
@@ -79,9 +79,9 @@ public class MedicoController {
     
     @GetMapping("/minhas-consultas")
     @PreAuthorize("hasAuthority('MEDICO')")
-    public ResponseEntity<List<Consulta>> getMinhasConsultas() {
-        Medico medico = medicoService.buscarMeuPerfil();
-        List<Consulta> consultas = consultaService.buscarConsultasPorMedicoId(medico.getId());
+    public ResponseEntity<List<ConsultaResponseDTO>> getMinhasConsultas() {
+        MedicoResponseDTO medico = medicoService.buscarMeuPerfil();
+        List<ConsultaResponseDTO> consultas = consultaService.buscarConsultasPorMedicoId(medico.getId());
         return ResponseEntity.ok(consultas);
     }   
 }

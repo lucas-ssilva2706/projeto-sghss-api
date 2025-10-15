@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.vidaplus.sghss_api.dto.UsuarioDTO;
+import com.vidaplus.sghss_api.dto.UsuarioResponseDTO;
 import com.vidaplus.sghss_api.model.Usuario;
 import com.vidaplus.sghss_api.model.enums.TipoUsuario;
 import com.vidaplus.sghss_api.repository.UsuarioRepository;
@@ -69,7 +70,7 @@ public class UsuarioServiceTest {
 		
 		when(passwordEncoder.encode(any(String.class))).thenReturn("senha_criptografada_mock");
 
-		Usuario resultado = usuarioService.criarUsuario(dtoEmailNovo);
+		UsuarioResponseDTO resultado = usuarioService.criarUsuario(dtoEmailNovo);
 
 		assertNotNull(resultado);
 		assertEquals(1L, resultado.getId());

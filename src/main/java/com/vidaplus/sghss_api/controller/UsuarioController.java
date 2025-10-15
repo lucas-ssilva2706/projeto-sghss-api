@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vidaplus.sghss_api.dto.UsuarioDTO;
-import com.vidaplus.sghss_api.model.Usuario;
+import com.vidaplus.sghss_api.dto.UsuarioResponseDTO;
 import com.vidaplus.sghss_api.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -23,45 +23,44 @@ import jakarta.validation.Valid;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+	private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+	public UsuarioController(UsuarioService usuarioService) {
+		this.usuarioService = usuarioService;
+	}
 
-    @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public List<Usuario> findAll() {
-        return usuarioService.listarTodos();
-    }
+	@GetMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public List<UsuarioResponseDTO> findAll() {
+		return usuarioService.listarTodos();
+	}
 
-    @GetMapping(path = "/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Usuario> findById(@PathVariable Long id) {
-        return usuarioService.buscarPorId(id)
-            .map(record -> ResponseEntity.ok().body(record))
-            .orElse(ResponseEntity.notFound().build());
-    }
+	@GetMapping(path = "/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ResponseEntity<UsuarioResponseDTO> findById(@PathVariable long id) {
+		return usuarioService.buscarPorId(id).map(record -> ResponseEntity.ok().body(record))
+				.orElse(ResponseEntity.notFound().build());
+	}
 
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public Usuario create(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        return usuarioService.criarUsuario(usuarioDTO);
-    }
+	@PostMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ResponseEntity<UsuarioResponseDTO> create(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+		UsuarioResponseDTO novoUsuario = usuarioService.criarUsuario(usuarioDTO);
+		return ResponseEntity.ok(novoUsuario);
+	}
 
-    @PutMapping(value = "/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Usuario> update(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
-        return usuarioService.atualizarUsuario(id, usuarioDTO)
-            .map(updatedUsuario -> ResponseEntity.ok().body(updatedUsuario))
-            .orElse(ResponseEntity.notFound().build());
-    }
+	@PutMapping(value = "/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public ResponseEntity<UsuarioResponseDTO> update(@PathVariable long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+		return usuarioService.atualizarUsuario(id, usuarioDTO).map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
+	}
 
-    @DeleteMapping(path = "/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+	@DeleteMapping(path = "/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
         if (usuarioService.deletarUsuario(id)) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
